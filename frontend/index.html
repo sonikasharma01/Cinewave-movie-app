@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover movies, save your watchlist and find a film that fits your mood and free time.">
+    <title>CineWave - Discover Movies</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <a class="logo" href="#home" aria-label="CineWave home">Cine<span>Wave</span></a>
+        <nav aria-label="Main navigation">
+            <a href="#home" class="active" aria-current="page" id="home-link">Home</a>
+            <a href="#movies-section" id="movies-link">Movies</a>
+            <a href="#movies-section" id="my-list-link">My List</a>
+            <a href="#moodmatch" id="moodmatch-link">MoodMatch</a>
+        </nav>
+        <div class="nav-right">
+            <label class="sr-only" for="movie-search">Search movies</label>
+            <input type="search" id="movie-search" placeholder="Search movies..." autocomplete="off">
+            <button type="button" id="search-btn" class="search-btn">Search</button>
+            <button type="button" class="login-btn" id="auth-button">Sign In</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <p class="tagline">WELCOME TO CINEWAVE</p>
+                <h1>Discover Your<br>Next Favourite Movie.</h1>
+                <p class="description">Explore movies, discover new stories and find the perfect movie for your mood.</p>
+                <a class="button-link play-btn" href="#movies-section">▶ Explore Movies</a>
+                <a class="button-link info-btn" href="#moodmatch">Find your mood</a>
+            </div>
+        </section>
+
+        <section class="moodmatch-section" id="moodmatch" aria-labelledby="moodmatch-title">
+            <div class="moodmatch-copy">
+                <p class="tagline">A LITTLE HELP CHOOSING</p>
+                <h2 id="moodmatch-title">Find your movie mood</h2>
+                <p>Pick a mood, set aside some time and choose a language. MoodMatch uses movie genres and available catalogue details to suggest a few options.</p>
+            </div>
+            <form id="moodmatch-form" class="moodmatch-form">
+                <label for="mood-select">What's your mood?</label>
+                <select id="mood-select" name="mood" required>
+                    <option value="happy">Happy</option>
+                    <option value="sad">A thoughtful watch</option>
+                    <option value="bored">Ready for an adventure</option>
+                    <option value="romantic">Romantic</option>
+                    <option value="excited">Excited</option>
+                </select>
+                <label for="runtime-select">How much time do you have?</label>
+                <select id="runtime-select" name="maxRuntime" required>
+                    <option value="60">Up to 1 hour</option>
+                    <option value="90" selected>Up to 1.5 hours</option>
+                    <option value="120">Up to 2 hours</option>
+                    <option value="180">Up to 3 hours</option>
+                </select>
+                <label for="language-select">Preferred language</label>
+                <select id="language-select" name="language" required>
+                    <option value="any">Any language</option>
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                </select>
+                <button class="primary-button" type="submit" id="moodmatch-submit">Find my movies</button>
+            </form>
+        </section>
+
+        <section class="movies-section" id="movies-section" aria-labelledby="movies-heading">
+            <h2 id="movies-heading">Popular Movies</h2>
+            <p id="results-explanation" class="results-explanation" aria-live="polite"></p>
+            <div id="movie-container" class="movie-container" aria-live="polite" aria-busy="true">
+                <p class="status-message">Loading movies...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <h2 class="logo">Cine<span>Wave</span></h2>
+        <p>Discover movies. Explore stories. Find your mood.</p>
+        <p class="copyright">© 2026 CineWave. Educational project. No full-length films are hosted or streamed.</p>
+    </footer>
+
+    <dialog id="auth-dialog" class="auth-dialog" aria-labelledby="auth-title">
+        <form id="auth-form" class="auth-form">
+            <button type="button" class="dialog-close" id="auth-close" aria-label="Close sign-in dialog">×</button>
+            <p class="tagline">YOUR CINEWAVE ACCOUNT</p>
+            <h2 id="auth-title">Welcome back</h2>
+            <p id="auth-description">Sign in to keep your watchlist with your account.</p>
+            <label for="auth-name" id="auth-name-label">Name</label>
+            <input id="auth-name" name="name" autocomplete="name" maxlength="80">
+            <label for="auth-email">Email</label>
+            <input id="auth-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+            <label for="auth-password">Password</label>
+            <input id="auth-password" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="128" required>
+            <p id="auth-message" class="form-message" role="status"></p>
+            <button class="primary-button" type="submit" id="auth-submit">Sign In</button>
+            <button type="button" class="text-button" id="auth-mode-toggle">New to CineWave? Create an account</button>
+        </form>
+    </dialog>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

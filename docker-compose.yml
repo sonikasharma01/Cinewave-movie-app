@@ -1,0 +1,16 @@
+services:
+  cinewave:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      DATA_FILE: /app/backend/data/users.json
+    env_file:
+      - ./backend/movie-service/.env
+    volumes:
+      - cinewave-data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  cinewave-data:
