@@ -28,6 +28,129 @@ let moodMatchCriteria = null;
 let watchlist = [];
 let authMode = "login";
 
+const localMovies = [
+  { title: "418", file: "418.mp4", colors: ["#e76f51", "#542f62"] },
+  { title: "Fall 2", file: "fall 2.mp4", colors: ["#d97732", "#392d55"] },
+  { title: "Godzilla Minus Zero", file: "godzilla minus zero.mp4", colors: ["#547c87", "#172b43"] },
+  { title: "Hope", file: "hope.mp4", colors: ["#e1a85b", "#67415e"] },
+  { title: "Mysaa", file: "mysaa.mp4", colors: ["#b15f79", "#392c5b"] },
+  { title: "Old", file: "old.mp4", colors: ["#8f8759", "#343b41"] },
+  { title: "Ramayan", file: "Ramayan.mp4", colors: ["#e68745", "#653c69"] },
+  { title: "Charge - Teaser", file: "Charge - Teaser.mp4", posterQuery: "Charge", colors: ["#df644b", "#392744"] },
+  { title: "Overgrown", file: "overgrown.mp4", colors: ["#81a75b", "#243f42"] },
+  { title: "Sintel", file: "sintel.mp4", colors: ["#d08150", "#3b354e"] },
+];
+
+function makeMoviePoster(movie) {
+  const [start, end] = movie.colors;
+  const title = movie.title.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const titleSize = movie.title.length > 17 ? 25 : 34;
+  const poster = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${start}"/><stop offset="1" stop-color="${end}"/></linearGradient><radialGradient id="glow"><stop stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="400" height="600" fill="url(#g)"/><circle cx="310" cy="210" r="220" fill="url(#glow)"/><path d="M0 475 110 300l75 105 85-190 130 210v175H0Z" fill="#081722" fill-opacity=".4"/><path d="M0 530 105 415l70 80 110-135 115 145v95H0Z" fill="#071923" fill-opacity=".62"/><text x="28" y="52" fill="#fff" fill-opacity=".78" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="3">CINEWAVE  /  VIDEO</text><text x="28" y="485" fill="#fff" font-family="Arial,sans-serif" font-size="${titleSize}" font-weight="800">${title}</text><text x="30" y="515" fill="#fff" fill-opacity=".78" font-family="Arial,sans-serif" font-size="11" letter-spacing="3">WATCH NOW</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(poster)}`;
+}
+
+function findMoviePoster(movie, image) {
+  const query = movie.posterQuery || movie.title;
+  apiRequest(`${API_URL}/movies/search?query=${encodeURIComponent(query)}`, { authenticated: false })
+    .then((results) => {
+      if (!Array.isArray(results)) return;
+      const normalizeTitle = (title) => title.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const title = normalizeTitle(query);
+      const match = results.find((result) => result.poster_path && normalizeTitle(result.title || "") === title)
+        || results.find((result) => result.poster_path)
+        || null;
+      if (match) {
+        image.alt = `${match.title || movie.title} poster`;
+        image.src = `${IMAGE_URL}${match.poster_path}`;
+      }
+    })
+    .catch((error) => {
+      console.error(`Poster could not be loaded for ${movie.title}:`, error);
+    });
+}
+
+function renderWatchNow() {
+  const container = document.getElementById("watch-now-container");
+  const fragment = document.createDocumentFragment();
+
+  localMovies.forEach((movie) => {
+    const url = `videos/${encodeURIComponent(movie.file)}`;
+    const card = document.createElement("article");
+    card.className = "watch-now-card";
+
+    const artwork = document.createElement("div");
+    artwork.className = "watch-now-artwork";
+    const poster = document.createElement("img");
+    poster.className = "watch-now-poster";
+    poster.src = makeMoviePoster(movie);
+    poster.alt = `${movie.title} poster`;
+    poster.loading = "lazy";
+    poster.onerror = () => {
+      poster.onerror = null;
+      poster.src = makeMoviePoster(movie);
+    };
+    findMoviePoster(movie, poster);
+    const preview = document.createElement("video");
+    preview.className = "watch-now-preview";
+    preview.muted = true;
+    preview.preload = "none";
+    preview.playsInline = true;
+    preview.setAttribute("aria-hidden", "true");
+    const playButton = createTextElement("button", "watch-now-cover-play", "▶");
+    playButton.type = "button";
+    playButton.setAttribute("aria-label", `Watch ${movie.title}`);
+    playButton.addEventListener("click", () => openLocalMovie(movie));
+    artwork.append(poster, preview, playButton);
+
+    card.addEventListener("mouseenter", () => {
+      if (preview.src) return;
+      preview.src = url;
+      preview.load();
+      preview.play().catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error(`Preview could not be played for ${movie.title}:`, error);
+        }
+      });
+    });
+    card.addEventListener("mouseleave", () => {
+      preview.pause();
+      if (preview.readyState > 0) preview.currentTime = 0;
+      preview.classList.remove("is-playing");
+      preview.removeAttribute("src");
+      preview.load();
+    });
+    preview.addEventListener("playing", () => preview.classList.add("is-playing"));
+
+    const title = createTextElement("h3", "", movie.title);
+    const eyebrow = createTextElement("p", "watch-now-eyebrow", "Ready when you are");
+    const actions = document.createElement("div");
+    actions.className = "watch-now-actions";
+
+    const watchButton = createTextElement("button", "watch-now-play", "▶ Watch Now");
+    watchButton.type = "button";
+    watchButton.addEventListener("click", () => openLocalMovie(movie));
+
+    const downloadLink = createTextElement("a", "watch-now-download", "↓ Download");
+    downloadLink.href = url;
+    downloadLink.download = movie.file;
+
+    actions.append(watchButton, downloadLink);
+    card.append(artwork, eyebrow, title, actions);
+    fragment.appendChild(card);
+  });
+
+  container.replaceChildren(fragment);
+}
+
+function openLocalMovie(movie) {
+  const dialog = document.getElementById("watch-dialog");
+  const video = document.getElementById("watch-video");
+  document.getElementById("watch-dialog-title").textContent = movie.title;
+  video.src = `videos/${encodeURIComponent(movie.file)}`;
+  dialog.showModal();
+  video.play().catch(() => {});
+}
+
 function createTextElement(tagName, className, text) {
   const element = document.createElement(tagName);
   element.className = className;
@@ -523,3 +646,13 @@ async function restoreSession() {
 updateAuthenticationUI(null);
 fetchMovies();
 restoreSession();
+renderWatchNow();
+
+const watchDialog = document.getElementById("watch-dialog");
+const watchVideo = document.getElementById("watch-video");
+document.getElementById("watch-close").addEventListener("click", () => watchDialog.close());
+watchDialog.addEventListener("close", () => {
+  watchVideo.pause();
+  watchVideo.removeAttribute("src");
+  watchVideo.load();
+});

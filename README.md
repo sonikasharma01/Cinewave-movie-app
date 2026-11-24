@@ -1,86 +1,104 @@
 # CineWave
 
-CineWave is an educational movie-discovery prototype. It uses TMDB metadata to browse and search films, view details and available trailers, maintain an account-based watchlist, and get rule-based MoodMatch suggestions. It does not host or stream full-length movies.
+CineWave is an educational movie-discovery prototype. It uses TMDB metadata to browse and search films, view details and available trailers, maintain an account-based watchlist, and get rule-based MoodMatch suggestions.
+
+It does not host or stream full-length movies.
 
 ## Requirements
 
 - Node.js 20 or newer
+- npm
 - A TMDB API read access token
-- Docker Desktop (optional, for the containerized setup)
 
-## Run locally
+## Project Setup
 
-1. Copy `backend/movie-service/.env.example` to `backend/movie-service/.env` and add your TMDB API read access token.
-2. From the `backend` directory, install dependencies and start the service:
+1. Copy `backend/movie-service/.env.example` to `backend/movie-service/.env`.
+2. Add your TMDB API read access token:
 
-   ```powershell
-   npm install
-   npm start
-   ```
-
-3. Open `http://localhost:5001`. You can also serve the `frontend` folder with VS Code Live Server; its API requests are sent to the CineWave backend on port `5001`.
-
-The Express app serves both the frontend and REST API. If the TMDB token is missing or invalid, the page still loads and displays a clear movie-service error. When hosting the frontend separately, set `<meta name="cinewave-api-url" content="https://your-backend.example/api">` in `frontend/index.html` to use your backend URL.
-
-## Troubleshooting
-
-- Check that the backend is running: open `http://localhost:5001/api/health`; it should return `{"status":"ok"}`.
-- Open CineWave at `http://localhost:5001`. If using VS Code Live Server, leave the backend running on port `5001`; the frontend detects a separate local frontend server and sends API requests to the backend.
-- If movies still do not load, verify that `backend/movie-service/.env` contains a valid TMDB API **read access token** under `TMDB_ACCESS_TOKEN`, then restart the backend.
-- TMDB requests also require outbound internet access. If the page reports it cannot reach TMDB, check the network, DNS, firewall or proxy; movie metadata will not load while TMDB is unreachable.
-- Browser developer tools → Network → `/api/movies/popular` shows the HTTP status and API error details. A 502 indicates TMDB connectivity or authorization trouble; a non-JSON web-page response usually means the frontend is pointed at the wrong server.
-
-## Run with Docker Compose
-
-Put `TMDB_ACCESS_TOKEN=your_token` in `backend/movie-service/.env`, then run from the project root:
-
-```powershell
-docker compose up --build
+```env
+TMDB_ACCESS_TOKEN=your_tmdb_read_access_token
 ```
 
-Open `http://localhost:5001`. Account and watchlist records are stored in the `cinewave-data` Docker volume. For local development without Docker, the default data file is `backend/data/users.json`.
+3. Open a terminal in the `backend` directory.
+4. Install dependencies:
+
+```bash
+npm install
+```
+
+5. Start the backend:
+
+```bash
+npm start
+```
+
+6. Open CineWave in your browser:
+
+```text
+http://localhost:5001
+```
+
+The Express application serves both the frontend and REST API. Alternatively, you can serve the `frontend` folder using VS Code Live Server. Its API requests are sent to the CineWave backend on port `5001`.
+
+When hosting the frontend separately, set the following meta tag in `frontend/index.html` to configure the backend URL:
+
+```html
+<meta name="cinewave-api-url" content="https://your-backend.example/api">
+```
 
 ## Features
 
-- Popular movies, title search, movie details, cast/crew metadata and available YouTube trailer links
+- Popular movies and title search
+- Movie details, cast and crew metadata
+- Available YouTube trailer links
 - MoodMatch preferences for mood, maximum runtime and original language
-- Registration, login, logout and a personal watchlist
+- Registration, login and logout
+- Personal account-based watchlist
 - Responsive layout for desktop and mobile
-- REST endpoints under `/api`, with user data stored locally for this prototype
+- REST API endpoints under `/api`
+- Local JSON file storage for user data
 
-Passwords are stored as salted scrypt hashes, and the browser holds a short-lived bearer token in session storage. The JSON file store and in-memory sessions are intended for a single-instance educational demo, not production use. Use a managed database, TLS, rate limiting, secure session storage and operational controls before deploying real user accounts.
+## Troubleshooting
 
-MoodMatch applies genre, runtime and language filters to TMDB discovery results and orders them by popularity. It is a transparent rules-based discovery aid, not a psychological assessment or machine-learning recommendation system. A recommendation may return no results when TMDB has no matching titles.
+- Check whether the backend is running by opening `http://localhost:5001/api/health`. It should return:
 
-## API
-
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| `GET` | `/api/health` | Service health |
-| `GET` | `/api/movies/popular` | Popular movie metadata |
-| `GET` | `/api/movies/search?query=...` | Search by title |
-| `GET` | `/api/movies/:id` | Movie details, credits and videos |
-| `GET` | `/api/movies/recommend?mood=happy&maxRuntime=90&language=en` | MoodMatch recommendations |
-| `POST` | `/api/auth/register` | Create an account |
-| `POST` | `/api/auth/login` | Sign in |
-| `GET` | `/api/auth/me` | Get the signed-in account |
-| `POST` | `/api/auth/logout` | End the session |
-| `GET` | `/api/watchlist/movies` | Get the signed-in user's watchlist |
-| `POST` | `/api/watchlist/movies` | Save a movie (`{ "movie": { ... } }`) |
-| `DELETE` | `/api/watchlist/movies/:id` | Remove a saved movie |
-
-Watchlist endpoints require `Authorization: Bearer <token>`. Registration requires a valid email and a password of at least 10 characters.
-
-## Test
-
-From `backend`, run:
-
-```powershell
-npm test
+```json
+{"status":"ok"}
 ```
 
-The tests cover API responses, MoodMatch filters, account validation and authentication-protected watchlist operations using a mocked movie-data provider.
+- Open CineWave at `http://localhost:5001`.
+- If movies do not load, verify that `backend/movie-service/.env` contains a valid TMDB API read access token under `TMDB_ACCESS_TOKEN`.
+- Restart the backend after changing environment variables.
+- TMDB requests require outbound internet access. Check network connectivity, DNS, firewall or proxy settings if TMDB cannot be reached.
+- Open browser Developer Tools → Network → `/api/movies/popular` to inspect HTTP status codes and API errors.
+- A 502 response usually indicates TMDB connectivity or authorization trouble.
+- A non-JSON web-page response usually indicates that the frontend is pointing to the wrong server.
 
-## Data attribution
+## Security and Data Storage
 
-This product uses the TMDB API but is not endorsed or certified by TMDB. Movie metadata, images and trailer availability are provided by third parties and remain subject to their terms and availability. AWS deployment and CI/CD are future work and are not configured by this local prototype.
+Passwords are stored as salted scrypt hashes. The browser holds a short-lived bearer token in session storage.
+
+The JSON file store and in-memory sessions are intended for a single-instance educational demonstration, not production use.
+
+Before deploying real user accounts, use:
+
+- A managed database
+- HTTPS/TLS
+- Rate limiting
+- Secure session storage
+- Appropriate operational and security controls
+
+## MoodMatch
+
+MoodMatch applies genre, runtime and language filters to TMDB discovery results and orders them by popularity.
+
+It is a transparent, rules-based discovery aid, not a psychological assessment or machine-learning recommendation system.
+
+Recommendations may return no results when TMDB has no matching titles.
+
+## API Documentation
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Service health |
+| GET | `/api/movies/popular` | Popular movie metadata

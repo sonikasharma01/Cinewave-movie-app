@@ -79,6 +79,11 @@
                 <p class="status-message">Loading movies...</p>
             </div>
         </section>
+
+        <section class="watch-now-section" id="watch-now" aria-labelledby="watch-now-heading">
+            <h2 id="watch-now-heading">Watch Now</h2>
+            <div id="watch-now-container" class="watch-now-container"></div>
+        </section>
     </main>
 
     <footer class="footer">
@@ -103,6 +108,14 @@
             <button class="primary-button" type="submit" id="auth-submit">Sign In</button>
             <button type="button" class="text-button" id="auth-mode-toggle">New to CineWave? Create an account</button>
         </form>
+    </dialog>
+
+    <dialog id="watch-dialog" class="watch-dialog" aria-labelledby="watch-dialog-title">
+        <div class="watch-dialog-header">
+            <h2 id="watch-dialog-title">Watch movie</h2>
+            <button type="button" class="dialog-close" id="watch-close" aria-label="Close video player">×</button>
+        </div>
+        <video id="watch-video" controls autoplay playsinline preload="metadata"></video>
     </dialog>
 
     <script src="js/app.js"></script>

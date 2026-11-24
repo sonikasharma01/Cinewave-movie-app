@@ -237,6 +237,207 @@ button:hover {
     font-size: 13px;
 }
 
+.watch-now-section {
+    padding: 34px 5% 64px;
+    background:
+        radial-gradient(ellipse at 12% 0, rgba(244, 162, 97, 0.09), transparent 38%),
+        linear-gradient(180deg, rgba(10, 32, 42, 0.25), rgba(7, 25, 35, 0));
+}
+
+.watch-now-section h2 {
+    margin-bottom: 8px;
+    font-size: clamp(24px, 3vw, 32px);
+    letter-spacing: -0.7px;
+}
+
+.watch-now-section h2::after {
+    display: block;
+    width: 42px;
+    height: 3px;
+    margin-top: 12px;
+    border-radius: 2px;
+    background: var(--accent);
+    content: "";
+}
+
+.watch-now-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.watch-now-card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: linear-gradient(155deg, rgba(22, 55, 68, 0.98), rgba(11, 32, 42, 0.98));
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.watch-now-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(244, 162, 97, 0.72);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.32);
+}
+
+.watch-now-artwork {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    background: #071923;
+}
+
+.watch-now-preview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 220ms ease;
+}
+
+.watch-now-poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 280ms ease;
+}
+
+.watch-now-card:hover .watch-now-poster {
+    transform: scale(1.04);
+}
+
+.watch-now-preview.is-playing {
+    opacity: 1;
+}
+
+.watch-now-cover-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    width: 54px;
+    height: 54px;
+    padding: 0 0 0 3px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    background: rgba(7, 25, 35, 0.75);
+    color: white;
+    font-size: 19px;
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(8px);
+}
+
+.watch-now-cover-play:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+
+.watch-now-card h3 {
+    min-height: 28px;
+    padding: 0 16px 8px;
+    font-size: 18px;
+    letter-spacing: -0.25px;
+}
+
+.watch-now-eyebrow {
+    padding: 15px 16px 5px;
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+.watch-now-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 10px;
+    padding: 8px 16px 16px;
+}
+
+.watch-now-play,
+.watch-now-download {
+    min-height: 44px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: center;
+    text-decoration: none;
+    transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.watch-now-play {
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+
+.watch-now-play:hover {
+    background: var(--accent-hover);
+}
+
+.watch-now-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--text);
+    font-weight: 700;
+}
+
+.watch-now-download:hover {
+    border-color: var(--accent);
+}
+
+.watch-dialog {
+    width: min(960px, calc(100% - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #071923;
+    color: var(--text);
+}
+
+.watch-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.82);
+}
+
+.watch-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+}
+
+.watch-dialog-header h2 {
+    font-size: 18px;
+}
+
+.watch-dialog-header .dialog-close {
+    position: static;
+}
+
+.watch-now-cover-play:focus-visible,
+.watch-now-play:focus-visible,
+.watch-now-download:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+#watch-video {
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 86px);
+    background: #000;
+}
+
 .watchlist-btn,
 .remove-watchlist-btn,
 .detail-watchlist-btn,
